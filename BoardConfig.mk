@@ -77,3 +77,9 @@ BOARD_SYSTEM_EXTIMAGE_EXTFS_INODE_COUNT := 4096
 # This target has no recovery partition
 BOARD_USES_RECOVERY_AS_BOOT := true
 TARGET_NO_RECOVERY := true
+
+# Device manifest: What HALs the device provides
+DEVICE_MANIFEST_FILE += device/motorola/hanoip/vintf/manifest.xml
+# Framework compatibility matrix: What the device(=vendor) expects of the framework(=system)
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += device/motorola/hanoip/vintf/framework_compatibility_matrix.xml
+DEVICE_MATRIX_FILE += device/motorola/hanoip/vintf/compatibility_matrix.xml
