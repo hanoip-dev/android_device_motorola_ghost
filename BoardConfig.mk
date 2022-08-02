@@ -116,6 +116,9 @@ DEVICE_MANIFEST_FILE += device/motorola/hanoip/vintf/manifest.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += device/motorola/hanoip/vintf/framework_compatibility_matrix.xml
 DEVICE_MATRIX_FILE += device/motorola/hanoip/vintf/compatibility_matrix.xml
 
+# BT definitions for Qualcomm solution
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/motorola/hanoip/bluetooth
+
 # Filesystem
 TARGET_FS_CONFIG_GEN += device/motorola/hanoip/mot_aids.fs
 
