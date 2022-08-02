@@ -63,6 +63,10 @@ PRODUCT_PACKAGES += \
     android.hidl.base@1.0 \
     android.hidl.base@1.0.vendor
 
+# Lights HAL
+PRODUCT_PACKAGES += \
+    android.hardware.lights-service.moto
+
 # Inherit from those products. Most specific first.
 $(call inherit-product, device/motorola/sm6150-common/platform.mk)
 
