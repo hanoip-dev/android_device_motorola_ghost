@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Fixes
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+
+# CPU ARCH
+TARGET_ARCH := arm64
+TARGET_CPU_ABI2 :=
+TARGET_CPU_VARIANT := generic
+
+TARGET_2ND_ARCH := arm
+TARGET_2ND_CPU_ABI2 := armeabi
+TARGET_2ND_CPU_VARIANT := generic
+
 # Boot Header
 BOARD_BOOT_HEADER_VERSION := 3
 
@@ -19,13 +31,25 @@ BOARD_BOOT_HEADER_VERSION := 3
 include device/motorola/sm6150-common/PlatformConfig.mk
 
 # Kernel cmdline
+BOARD_KERNEL_IMAGE_NAME := Image.gz
 TARGET_PREBUILT_KERNEL := device/motorola/hanoip/prebuilt/Image.gz
 BOARD_KERNEL_CMDLINE += \
     androidboot.hab.csv=5 \
     androidboot.hab.product=hanoip \
     androidboot.hab.cid=50
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+endif
+BOARD_KERNEL_CMDLINE += androidboot.console=ttyMSM0
+BOARD_KERNEL_CMDLINE += androidboot.memcg=1
+BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom
+BOARD_KERNEL_CMDLINE += loop.max_part=7
+BOARD_KERNEL_CMDLINE += service_locator.enable=1
+BOARD_KERNEL_CMDLINE += swiotlb=0
+BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
 
 TARGET_BOOTLOADER_BOARD_NAME := hanoip
+
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 # Platform
 PRODUCT_PLATFORM := sm6150
@@ -74,6 +98,12 @@ BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_SYSTEM_EXTIMAGE_JOURNAL_SIZE := 0
 BOARD_SYSTEM_EXTIMAGE_EXTFS_INODE_COUNT := 4096
 
+# Use mke2fs to create ext4/f2fs images
+TARGET_USERIMAGES_USE_EXT4 := true
+TARGET_USERIMAGES_USE_F2FS := true
+
+BOARD_ROOT_EXTRA_SYMLINKS += /mnt/vendor/persist:/persist
+
 # This target has no recovery partition
 BOARD_USES_RECOVERY_AS_BOOT := true
 TARGET_NO_RECOVERY := true
@@ -86,3 +116,38 @@ DEVICE_MATRIX_FILE += device/motorola/hanoip/vintf/compatibility_matrix.xml
 
 # Filesystem
 TARGET_FS_CONFIG_GEN += device/motorola/hanoip/mot_aids.fs
+
+# Media
+TARGET_USES_ION := true
+
+# Charger
+BOARD_CHARGER_DISABLE_INIT_BLANK := true
+BOARD_CHARGER_ENABLE_SUSPEND := true
+
+# Wi-Fi Concurrent STA/AP
+WIFI_HIDL_FEATURE_DUAL_INTERFACE := true
+
+# Enable dex-preoptimization to speed up first boot sequence
+WITH_DEXPREOPT := true
+WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY ?= false
+
+# SELinux
+include device/qcom/sepolicy_vndr/SEPolicy.mk
+include device/sony/sepolicy/sepolicy.mk
+BOARD_VENDOR_SEPOLICY_DIRS += device/motorola/hanoip/sepolicy/vendor
+
+# New vendor security patch level: https://r.android.com/660840/
+# Used by newer keymaster binaries
+VENDOR_SECURITY_PATCH=$(PLATFORM_SECURITY_PATCH)
+
+# Memory
+MALLOC_SVELTE := true
+
+# RIL
+ENABLE_VENDOR_RIL_SERVICE := true
+
+# QCOM
+BOARD_USES_QCOM_HARDWARE := true
+
+# TEMP - Please Fix
+BUILD_BROKEN_VENDOR_PROPERTY_NAMESPACE := false
