@@ -562,8 +562,11 @@ ifeq ($(AB_OTA_UPDATER),true)
 PRODUCT_PACKAGES += \
     android.hardware.boot@1.1-impl-qti \
     android.hardware.boot@1.1-impl-qti.recovery \
-    android.hardware.boot@1.1-service
+    android.hardware.boot@1.1-service \
+    bootctrl.sm6150 \
+    bootctrl.sm6150.recovery
 endif
+
 
 # Proprietary Blobs
 QCOM_COMMON_PATH := device/qcom/common
