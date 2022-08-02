@@ -57,6 +57,12 @@ PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 PRODUCT_PROPERTY_OVERRIDES := \
     ro.sf.lcd_density=400
 
+
+# HIDL
+PRODUCT_PACKAGES += \
+    android.hidl.base@1.0 \
+    android.hidl.base@1.0.vendor
+
 # Inherit from those products. Most specific first.
 $(call inherit-product, device/motorola/sm6150-common/platform.mk)
 
