@@ -1,0 +1,7 @@
+libadsprpc.so
+libcdsprpc.so
+libsdsprpc.so
+libOpenCL.so
+libaptX_encoder.so
+libaptXHD_encoder.so
+libprotobuf-cpp-full.so
