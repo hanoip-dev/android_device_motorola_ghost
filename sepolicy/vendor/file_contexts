@@ -8,6 +8,9 @@
 # Fingerprint
 /dev/esfp0 u:object_r:tee_device:s0
 /(mnt/vendor/persist|persist)/fps(/.*)? u:object_r:vendor_persist_fingerprint_file:s0
+/vendor/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service-chipone u:object_r:hal_fingerprint_default_exec:s0
+/vendor/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service-fpc u:object_r:hal_fingerprint_default_exec:s0
+
 
 # FSG
 /vendor/fsg u:object_r:vendor_fsg_file:s0
