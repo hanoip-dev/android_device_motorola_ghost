@@ -44,7 +44,7 @@ PRODUCT_COPY_FILES := \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.sip.voip.xml \
-    frameworks/native/data/etc/android.software.verified_boot.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.verified_boot.xml
+    frameworks/native/data/etc/android.software.verified_boot.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.verified_boot.xml \
     frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.gyroscope.xml \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.barometer.xml \
     frameworks/native/data/etc/android.hardware.sensor.stepcounter.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepcounter.xml \
@@ -56,27 +56,14 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
     frameworks/native/data/etc/android.hardware.telephony.ims.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.ims.xml
 
-# Common path
-COMMON_PATH := device/motorola/common
-
-# QCOM Platform selector
-ifeq ($(KERNEL_VERSION), 5.4)
-qcom_platform := sm8350
-else ifeq ($(KERNEL_VERSION), 4.19)
-qcom_platform := sm8250
-else
-qcom_platform := sm8150
-endif
-
 # Enable building packages from device namespaces.
 # Might be temporary! See:
 # https://android.googlesource.com/platform/build/soong/+/master/README.md#name-resolution
 PRODUCT_SOONG_NAMESPACES += \
     device/motorola/hanoip \
-    $(PLATFORM_COMMON_PATH) \
-    vendor/qcom/opensource/audio/$(qcom_platform) \
+    vendor/qcom/opensource/audio/sm8150 \
     vendor/qcom/opensource/data-ipa-cfg-mgr \
-    vendor/qcom/opensource/display/$(qcom_platform) \
+    vendor/qcom/opensource/display/sm8150 \
     vendor/qcom/opensource/display-commonsys-intf
 
 ifeq ($(PRODUCT_USES_PIXEL_POWER_HAL),true)
@@ -118,9 +105,6 @@ PRODUCT_PACKAGES += \
 # Force building a recovery image: Needed for OTA packaging to work since Q
 PRODUCT_BUILD_RECOVERY_IMAGE := true
 
-# Kernel Path
-KERNEL_PATH := kernel/motorola/msm-$(KERNEL_VERSION)
-
 # Configure qti-headers auxiliary module via soong
 SOONG_CONFIG_NAMESPACES += qti_kernel_headers
 SOONG_CONFIG_qti_kernel_headers := version
@@ -149,19 +133,15 @@ TARGET_USES_INTERACTION_BOOST := true
 
 include device/qcom/common/common.mk
 
-# Kernel
-PRODUCT_COPY_FILES += \
-    device/motorola/hanoip/prebuilt/Image.gz:kernel
-
-# Kernel Headers
-PRODUCT_VENDOR_KERNEL_HEADERS := device/motorola/hanoip/prebuilt/kernel-headers
-
 # Audio Configuration
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/vendor/etc/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
     $(DEVICE_PATH)/vendor/etc/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
     $(DEVICE_PATH)/vendor/etc/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
-    $(DEVICE_PATH)/vendor/etc/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml
+    $(DEVICE_PATH)/vendor/etc/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml \
+    $(DEVICE_PATH)/vendor/etc/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
+    $(DEVICE_PATH)/vendor/etc/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(DEVICE_PATH)/vendor/etc/audio_policy_configuration_bluetooth_legacy_hal.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration_bluetooth_legacy_hal.xml
 
 # Bluetooth
 PRODUCT_COPY_FILES += \
@@ -332,12 +312,6 @@ PRODUCT_COPY_FILES += \
 # See https://source.android.com/devices/tech/config/namespaces_libraries
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/vendor/etc/public.libraries.txt:$(TARGET_COPY_OUT_VENDOR)/etc/public.libraries.txt
-
-# Audio
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/vendor/etc/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
-    $(DEVICE_PATH)/vendor/etc/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
-    $(DEVICE_PATH)/vendor/etc/audio_policy_configuration_bluetooth_legacy_hal.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration_bluetooth_legacy_hal.xml
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -642,14 +616,12 @@ $(call inherit-product, vendor/qcom/opensource/power/power-vendor-product.mk)
 endif
 
 # Only define bootctrl HAL availability on AB platforms:
-ifeq ($(AB_OTA_UPDATER),true)
 PRODUCT_PACKAGES += \
     android.hardware.boot@1.1-impl-qti \
     android.hardware.boot@1.1-impl-qti.recovery \
     android.hardware.boot@1.1-service \
     bootctrl.sm6150 \
     bootctrl.sm6150.recovery
-endif
 
 # Proprietary Blobs
 QCOM_COMMON_PATH := device/qcom/common
@@ -668,19 +640,11 @@ include $(QCOM_COMMON_PATH)/vendor/charging/qti-charging.mk
 include $(QCOM_COMMON_PATH)/vendor/drm/qti-drm.mk
 include $(QCOM_COMMON_PATH)/vendor/dsprpcd/qti-dsprpcd.mk
 include $(QCOM_COMMON_PATH)/vendor/keymaster/qti-keymaster.mk
-ifeq ($(KERNEL_VERSION),5.4)
-include $(QCOM_COMMON_PATH)/vendor/media/qti-media.mk
-else
 include $(QCOM_COMMON_PATH)/vendor/media-legacy/qti-media-legacy.mk
-endif
 ifneq ($(PRODUCT_USES_PIXEL_POWER_HAL),true)
 include $(QCOM_COMMON_PATH)/vendor/perf/qti-perf.mk
 endif
-ifneq ($(KERNEL_VERSION),5.4)
-include $(QCOM_COMMON_PATH)/vendor/qseecomd-legacy/qti-qseecomd-legacy.mk
-else
 include $(QCOM_COMMON_PATH)/vendor/qseecomd/qti-qseecomd.mk
-endif
 include $(QCOM_COMMON_PATH)/vendor/usb/qti-usb.mk
 include $(QCOM_COMMON_PATH)/vendor/wlan/qti-wlan.mk
 
