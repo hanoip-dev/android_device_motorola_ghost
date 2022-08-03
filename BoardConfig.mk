@@ -17,17 +17,20 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 # CPU ARCH
 TARGET_ARCH := arm64
+TARGET_ARCH_VARIANT := armv8-2a
 TARGET_CPU_ABI := arm64-v8a
 TARGET_CPU_ABI2 :=
 TARGET_CPU_VARIANT := generic
 
 TARGET_2ND_ARCH := arm
+TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
 
 # Boot Header
 BOARD_BOOT_HEADER_VERSION := 3
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
 # PlatformConfig
 include device/motorola/sm6150-common/PlatformConfig.mk
@@ -48,10 +51,17 @@ BOARD_KERNEL_CMDLINE += loop.max_part=7
 BOARD_KERNEL_CMDLINE += service_locator.enable=1
 BOARD_KERNEL_CMDLINE += swiotlb=0
 BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
+BOARD_KERNEL_CMDLINE += androidboot.usbcontroller=a600000.dwc3
+
+BOARD_KERNEL_BASE        := 0x00000000
+BOARD_KERNEL_PAGESIZE    := 4096
+BOARD_RAMDISK_OFFSET     := 0x01000000
+BOARD_DTB_OFFSET         := 0x01f00000
+
+BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 TARGET_BOOTLOADER_BOARD_NAME := hanoip
-
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 # Platform
 PRODUCT_PLATFORM := sm6150
@@ -110,6 +120,23 @@ BOARD_ROOT_EXTRA_SYMLINKS += /mnt/vendor/persist:/persist
 BOARD_USES_RECOVERY_AS_BOOT := true
 TARGET_NO_RECOVERY := true
 
+# Build a separate vendor.img
+TARGET_COPY_OUT_VENDOR := vendor
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
+
+# Build product image
+TARGET_COPY_OUT_PRODUCT := product
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+
+# This platform has a metadata partition: declare this
+# to create a mount point for it
+BOARD_USES_METADATA_PARTITION := true
+
+# DTBO Recovery
+BOARD_INCLUDE_RECOVERY_DTBO := true
+
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/vendor/etc/fstab.qcom
+
 # Device manifest: What HALs the device provides
 DEVICE_MANIFEST_FILE += device/motorola/hanoip/vintf/manifest.xml
 # Framework compatibility matrix: What the device(=vendor) expects of the framework(=system)
@@ -157,4 +184,13 @@ BOARD_USES_QCOM_HARDWARE := true
 # USB
 SOONG_CONFIG_NAMESPACES += MOTO_COMMON_USB
 SOONG_CONFIG_MOTO_COMMON_USB := USB_CONTROLLER_NAME
-SOONG_CONFIG_MOTO_COMMON_USB_USB_CONTROLLER_NAME
+SOONG_CONFIG_MOTO_COMMON_USB_USB_CONTROLLER_NAME := 4e00000
+
+# AVB
+BOARD_AVB_ENABLE := true
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
+BOARD_AVB_VBMETA_SYSTEM := system
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
