@@ -18,6 +18,12 @@ DEVICE_PATH := device/motorola/hanoip/rootdir
 DEVICE_PACKAGE_OVERLAYS += \
     device/motorola/hanoip/overlay
 
+# Platform
+SM6150 := sm6150
+KERNEL_VERSION := 4.14
+PRODUCT_PLATFORM_MOT := true
+TARGET_BOARD_PLATFORM := $(SM6150)
+
 # Device Specific Permissions
 PRODUCT_COPY_FILES := \
     frameworks/native/data/etc/handheld_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/handheld_core_hardware.xml \
@@ -39,6 +45,10 @@ PRODUCT_COPY_FILES := \
     frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/android.software.verified_boot.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.verified_boot.xml
+    frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.gyroscope.xml \
+    frameworks/native/data/etc/android.hardware.sensor.barometer.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.barometer.xml \
+    frameworks/native/data/etc/android.hardware.sensor.stepcounter.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepcounter.xml \
+    frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepdetector.xml
 
 # Telephony Permissions
 PRODUCT_COPY_FILES += \
@@ -323,6 +333,80 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/vendor/etc/public.libraries.txt:$(TARGET_COPY_OUT_VENDOR)/etc/public.libraries.txt
 
+# Audio
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/etc/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
+    $(DEVICE_PATH)/vendor/etc/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(DEVICE_PATH)/vendor/etc/audio_policy_configuration_bluetooth_legacy_hal.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration_bluetooth_legacy_hal.xml
+
+# Media
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/etc/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
+    $(DEVICE_PATH)/vendor/etc/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml \
+    $(DEVICE_PATH)/vendor/etc/media_profiles.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles.xml \
+    $(DEVICE_PATH)/vendor/etc/media_profiles_vendor.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_vendor.xml
+
+# Qualcom WiFi Overlay
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/etc/wifi/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
+    $(DEVICE_PATH)/vendor/etc/wifi/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant_overlay.conf
+
+# Qualcom WiFi Configuration
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini
+
+# MSM IRQ Balancer configuration file
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/etc/msm_irqbalance.conf:$(TARGET_COPY_OUT_VENDOR)/etc/msm_irqbalance.conf
+
+# Platform specific init
+PRODUCT_PACKAGES += \
+    ueventd
+
+# Sensors
+# hardware.ssc.so links against display mappers, of which
+# the interface libraries are explicitly included here:
+PRODUCT_PACKAGES += \
+    android.hardware.sensors@2.0-service.multihal \
+    vendor.qti.hardware.display.mapper@1.1.vendor \
+    vendor.qti.hardware.display.mapper@3.0.vendor
+
+# QCOM Bluetooth
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.qcom.bluetooth.soc=cherokee
+
+# Legacy BT property (will be removed in S)
+PRODUCT_PROPERTY_OVERRIDES += \
+    vendor.qcom.bluetooth.soc=cherokee
+
+# Gatekeeper
+PRODUCT_PROPERTY_OVERRIDES += \
+    vendor.gatekeeper.disable_spu=true
+
+# Init
+PRODUCT_COPY_FILES += \
+    device/qcom/common/vendor/init/sm6150/bin/init.kernel.post_boot.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.kernel.post_boot.sh
+
+PRODUCT_SOONG_NAMESPACES += device/qcom/common/vendor/init
+
+# FPSensor Gestures
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/usr/keylayout/uinput-fpc.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/uinput-fpc.kl \
+    $(DEVICE_PATH)/vendor/usr/idc/uinput-fpc.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/uinput-fpc.idc
+
+# Fingerprint
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/etc/init/android.hardware.biometrics.fingerprint@2.1-service-fpc2.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.biometrics.fingerprint@2.1-service-fpc2.rc
+
+# Power
+PRODUCT_COPY_FILES += \
+    $(DEVICE_PATH)/vendor/etc/powerhint.json:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.json
+
+PRODUCT_USES_PIXEL_POWER_HAL := false
+
+# USB
+PRODUCT_USES_PIXEL_USB_HAL := false
+
 # Unlock dex2oat threads
 PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.dex2oat-threads=8 \
@@ -567,7 +651,6 @@ PRODUCT_PACKAGES += \
     bootctrl.sm6150.recovery
 endif
 
-
 # Proprietary Blobs
 QCOM_COMMON_PATH := device/qcom/common
 # System
@@ -605,8 +688,8 @@ PRODUCT_SOONG_NAMESPACES += \
     vendor/qcom/common/vendor/dsprpcd \
     vendor/qcom/common/vendor/perf
 
-# Inherit from those products. Most specific first.
-$(call inherit-product, device/motorola/sm6150-common/platform.mk)
-
 # include board vendor blobs
 $(call inherit-product-if-exists, vendor/motorola/hanoip/hanoip-vendor.mk)
+
+$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
