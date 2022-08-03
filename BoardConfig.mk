@@ -32,18 +32,15 @@ TARGET_2ND_CPU_VARIANT := generic
 BOARD_BOOT_HEADER_VERSION := 3
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
-# PlatformConfig
-include device/motorola/sm6150-common/PlatformConfig.mk
-
 # Kernel cmdline
 BOARD_KERNEL_IMAGE_NAME := Image.gz
-TARGET_PREBUILT_KERNEL := device/motorola/hanoip/prebuilt/Image.gz
-BOARD_KERNEL_CMDLINE += \
-    androidboot.hab.csv=5 \
-    androidboot.hab.product=hanoip \
-    androidboot.hab.cid=50
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
-endif
+TARGET_KERNEL_SOURCE := kernel/motorola/hanoip
+TARGET_KERNEL_CLANG_COMPILE := true
+TARGET_KERNEL_CONFIG := hanoip_defconfig
+
+BOARD_KERNEL_CMDLINE += androidboot.hab.csv=5
+BOARD_KERNEL_CMDLINE += androidboot.hab.product=hanoip
+BOARD_KERNEL_CMDLINE += androidboot.hab.cid=50
 BOARD_KERNEL_CMDLINE += androidboot.console=ttyMSM0
 BOARD_KERNEL_CMDLINE += androidboot.memcg=1
 BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom
@@ -52,27 +49,21 @@ BOARD_KERNEL_CMDLINE += service_locator.enable=1
 BOARD_KERNEL_CMDLINE += swiotlb=0
 BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
 BOARD_KERNEL_CMDLINE += androidboot.usbcontroller=a600000.dwc3
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
 BOARD_KERNEL_BASE        := 0x00000000
 BOARD_KERNEL_PAGESIZE    := 4096
 BOARD_RAMDISK_OFFSET     := 0x01000000
 BOARD_DTB_OFFSET         := 0x01f00000
 
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)  
+BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 TARGET_BOOTLOADER_BOARD_NAME := hanoip
 
 # Platform
 PRODUCT_PLATFORM := sm6150
-
-# Kernel DTB/DTBO
-BOARD_PREBUILT_DTBIMAGE_DIR := device/motorola/hanoip/prebuilt/dtb
-BOARD_PREBUILT_DTBOIMAGE := device/motorola/hanoip/prebuilt/dtbo.img
-
-# Kernel Modules
-BOARD_VENDOR_KERNEL_MODULES := \
-    $(wildcard device/motorola/hanoip/prebuilt/modules/*.ko)
 
 # Partition information
 BOARD_FLASH_BLOCK_SIZE := 262144 # (BOARD_KERNEL_PAGESIZE * 64)
