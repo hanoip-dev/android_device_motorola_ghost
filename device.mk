@@ -654,7 +654,7 @@ include $(QCOM_COMMON_PATH)/vendor/media-legacy/qti-media-legacy.mk
 ifneq ($(PRODUCT_USES_PIXEL_POWER_HAL),true)
 include $(QCOM_COMMON_PATH)/vendor/perf/qti-perf.mk
 endif
-include $(QCOM_COMMON_PATH)/vendor/qseecomd/qti-qseecomd.mk
+include $(QCOM_COMMON_PATH)/vendor/qseecomd/qti-qseecomd-legacy.mk
 include $(QCOM_COMMON_PATH)/vendor/usb/qti-usb.mk
 include $(QCOM_COMMON_PATH)/vendor/wlan/qti-wlan.mk
 
