@@ -17,10 +17,10 @@ $(call inherit-product, device/motorola/hanoip/device.mk)
 $(call inherit-product, frameworks/native/build/phone-xhdpi-4096-dalvik-heap.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 
-# Inherit some common ArrowOS stuff
-$(call inherit-product, vendor/arrow/config/common.mk)
+# Inherit some common cipherOS stuff
+$(call inherit-product, vendor/cipher/config/common.mk)
 
-PRODUCT_NAME := arrow_hanoip
+PRODUCT_NAME := cipher_hanoip
 PRODUCT_DEVICE := hanoip
 PRODUCT_MODEL := moto g60
 PRODUCT_BRAND := motorola
