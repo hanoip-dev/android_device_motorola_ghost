@@ -23,6 +23,8 @@ SM6150 := sm6150
 KERNEL_VERSION := 4.14
 PRODUCT_PLATFORM_MOT := true
 TARGET_BOARD_PLATFORM := $(SM6150)
+qcom_platform := sm8150
+PRODUCT_SHIPPING_API_LEVEL := 30
 
 # Device Specific Permissions
 PRODUCT_COPY_FILES := \
@@ -158,9 +160,6 @@ PRODUCT_PACKAGES += \
     init.target.rc \
     vendor_modprobe.sh
 
-# AB Partitions
-AB_OTA_PARTITIONS += vendor_boot
-
 # TEMPORARY: These libraries are deprecated, not referenced by any AOSP
 # nor OSS HAL We don't add a dependency on the vndk variants as those
 # end up in /system but require these in /vendor instead:
@@ -177,6 +176,23 @@ PRODUCT_PACKAGES += \
 # Audio deps
 PRODUCT_PACKAGES += \
     libfmq
+
+# A/B OTA dexopt package
+PRODUCT_PACKAGES += \
+    otapreopt_script
+
+# A/B OTA dexopt update_engine hookup
+AB_OTA_POSTINSTALL_CONFIG += \
+    RUN_POSTINSTALL_system=true \
+    POSTINSTALL_PATH_system=system/bin/otapreopt_script \
+    FILESYSTEM_TYPE_system=ext4 \
+    POSTINSTALL_OPTIONAL_system=true
+
+# A/B related packages
+PRODUCT_PACKAGES += \
+    update_engine \
+    update_engine_sideload \
+    update_verifier \
 
 # The following modules are included in debuggable builds only.
 PRODUCT_PACKAGES_DEBUG += \
