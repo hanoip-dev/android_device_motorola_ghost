@@ -199,6 +199,10 @@ PRODUCT_PACKAGES_DEBUG += \
     bootctl \
     update_engine_client
 
+# Dynamic Partitions: build fastbootd
+PRODUCT_PACKAGES += \
+    fastbootd
+
 # IMS (OSS)
 PRODUCT_PACKAGES += \
     telephony-ext \
