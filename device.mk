@@ -58,6 +58,16 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
     frameworks/native/data/etc/android.hardware.telephony.ims.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.ims.xml
 
+# Enable building packages from device namespaces.
+# Might be temporary! See:
+# https://android.googlesource.com/platform/build/soong/+/master/README.md#name-resolution
+PRODUCT_SOONG_NAMESPACES += \
+    device/motorola/hanoip \
+    vendor/qcom/opensource/audio/sm8150 \
+    vendor/qcom/opensource/data-ipa-cfg-mgr \
+    vendor/qcom/opensource/display/sm8150 \
+    vendor/qcom/opensource/display-commonsys-intf
+
 ifeq ($(PRODUCT_USES_PIXEL_POWER_HAL),true)
 PRODUCT_SOONG_NAMESPACES += \
     hardware/google/pixel
