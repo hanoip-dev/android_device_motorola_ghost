@@ -38,7 +38,8 @@ AB_OTA_PARTITIONS += \
     vendor \
     vbmeta \
     vbmeta_system \
-    vendor_boot
+    vendor_boot \
+    system_ext
     
 # Boot Header
 BOARD_BOOT_HEADER_VERSION := 3
@@ -65,12 +66,8 @@ BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
 BOARD_KERNEL_BASE        := 0x00000000
 BOARD_KERNEL_PAGESIZE    := 4096
-BOARD_RAMDISK_OFFSET     := 0x01000000
-BOARD_DTB_OFFSET         := 0x01f00000
-
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset $(BOARD_RAMDISK_OFFSET)  
+  
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
-BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 
 TARGET_BOOTLOADER_BOARD_NAME := hanoip
 
